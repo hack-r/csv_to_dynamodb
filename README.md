@@ -34,7 +34,7 @@ table = csv_to_dynamodb.create_table(
 )
 ```
 
-```
+
 ## Arguments:
 
 - access_key (required): Your AWS access key.
@@ -46,5 +46,6 @@ table = csv_to_dynamodb.create_table(
 - range_key (optional): The name of the column in your CSV file to use as the range key for your DynamoDB table. If not specified, your table will not have a range key.
 
 ## License: 
+
 GNU v3
 
