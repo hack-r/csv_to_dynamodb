@@ -9,7 +9,7 @@ Available on PyPI (and therefore via pip, pip3, etc).
 https://pypi.org/project/csv-to-dynamodb/0.1.0/
 
 ```python
-pip install csv-to-dynamodb
+pip3 install csv-to-dynamodb
 ```
 
 ## Usage
