@@ -28,14 +28,12 @@ table_name = "your_table_name"
 hash_key = "your_hash_key"
 range_key = "your_range_key"
 
+# Invocation:
 table = csv_to_dynamodb.create_table(
     access_key=access_key,
     secret_key=secret_key,
     region=region,
-    csv_path=csv_path,
-    table_name=table_name,
-    hash_key=hash_key,
-    range_key=range_key
+    csv_path=csv_path
 )
 ```
 
