@@ -20,20 +20,20 @@ import csv_to_dynamodb
 # Required:
 access_key = "your_aws_access_key"
 secret_key = "your_aws_secret_key"
-region = "your_aws_region"
-csv_path = "/path/to/your/csv_file.csv"
+region     = "your_aws_region"
+csv_path   = "/path/to/your/csv_file.csv"
 
 # Optional:
 table_name = "your_table_name"
-hash_key = "your_hash_key"
-range_key = "your_range_key"
+hash_key   = "your_hash_key"
+range_key  = "your_range_key"
 
 # Invocation:
 table = csv_to_dynamodb.create_table(
-    access_key=access_key,
-    secret_key=secret_key,
-    region=region,
-    csv_path=csv_path
+    access_key = access_key,
+    secret_key = secret_key,
+    region     = region,
+    csv_path   = csv_path
 )
 ```
 
