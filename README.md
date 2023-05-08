@@ -3,9 +3,11 @@
 A Python library to create a DynamoDB table from a CSV file.
 
 ## Installation
+Available on PyPI (and therefore via pip, pip3, etc). https://pypi.org/project/csv-to-dynamodb/0.1.0/#history
 
+```python
 pip install csv-to-dynamodb
-
+```
 
 ## Usage
 
