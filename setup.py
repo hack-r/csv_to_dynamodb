@@ -9,5 +9,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         'boto3',
+        'botocore',
+        'pandas'
     ],
 )

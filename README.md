@@ -1,6 +1,6 @@
 # csv-to-dynamodb
 
-A Python library to create a DynamoDB table from a CSV file.
+A Python library to create a DynamoDB table from a CSV file. Optionally, these tables can be populated with populate_table, which also supports directories and lists of CSVs as inputs.
 
 ## Installation
 
@@ -12,7 +12,13 @@ https://pypi.org/project/csv-to-dynamodb/0.1.0/
 pip3 install csv-to-dynamodb
 ```
 
+## Dependencies
+
+This library uses boto3, botocore, and pandas. They are included in the requirements.txt and the setup.py files.
+
 ## Usage
+
+The `create_table` method can be used to create tables as follows:
 
 ```python
 import csv_to_dynamodb
@@ -37,6 +43,21 @@ table = csv_to_dynamodb.create_table(
 )
 ```
 
+`populate_table` creates the table if it's not already created and populates it. It will populate an existing but empty table of the same name if the columns and data types match.
+
+```
+populate_table(
+    access_key = access_key,
+    secret_key = secret_key,
+    region     = region,
+    csv_path   = csv_path,
+    table_name = table_name,
+    hash_key   = hash_key,
+    range_key  = range_key
+)
+```
+
+See sample_usage.py and sample_usage2.py for more examples.
 
 ## Arguments:
 
