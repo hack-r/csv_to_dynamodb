@@ -1,7 +1,15 @@
+# Libs
+from botocore.exceptions import ClientError
+from botocore.exceptions import NoCredentialsError
+
 import csv
 import boto3
+import decimal
+import os
+import pandas as pd
 import re
 
+# Main function
 def create_table(access_key, secret_key, region, csv_path, table_name=None, hash_key=None, range_key=None):
     # Read in the CSV file and count the rows
     with open(csv_path, newline='') as csvfile:
@@ -76,3 +84,71 @@ def create_table(access_key, secret_key, region, csv_path, table_name=None, hash
     table.wait_until_exists()
 
     return table
+
+# Data ingest
+def populate_table(access_key, secret_key, region, csv_path, table_name=None, hash_key=None, range_key=None):
+    # Handle both a single string and a list of strings for csv_path
+    if isinstance(csv_path, str):
+        csv_files = [csv_path]
+    else:
+        csv_files = csv_path
+
+    for file_path in csv_files:
+        # Define table_name inside the loop
+        if table_name is None:
+            table_name = re.sub(r'\W+', '_', os.path.basename(file_path).split('.')[0])
+
+        if os.path.isdir(file_path):
+            # If the path is a directory, get all CSV files in the directory
+            csv_files_in_dir = [os.path.join(file_path, f) for f in os.listdir(file_path) if f.endswith('.csv')]
+            csv_files.extend(csv_files_in_dir)
+            continue
+
+        # Connect to the DynamoDB table
+        session = boto3.Session(
+            aws_access_key_id=access_key,
+            aws_secret_access_key=secret_key,
+            region_name=region
+        )
+        dynamodb = session.resource('dynamodb')
+
+        try:
+            # Create the table first
+            table = create_table(access_key, secret_key, region, file_path, table_name, hash_key, range_key)
+            table = dynamodb.Table(table.name)  # Get the table object
+        except ClientError as e:
+            if e.response['Error']['Code'] == "ResourceInUseException":
+                # If table already exists, just connect to it
+                table = dynamodb.Table(table_name)
+            else:
+                print(f"Unexpected error: {e}")
+                continue
+                
+        # Check if the table is empty
+        if table.item_count > 0:
+            print(f"The table {table.name} is not empty. Data upload stopped for this table.")
+            continue
+
+        # Now let's populate the table with data from the CSV file
+        # We use pandas to handle large files in chunks
+        chunksize = 500  # DynamoDB batch write limit
+        for chunk in pd.read_csv(file_path, chunksize=chunksize):
+            items = chunk.to_dict('records')
+            # Convert data to proper format for dynamodb
+            for item in items:
+                item = {k: decimal.Decimal(str(v)) if pd.notnull(v) and isinstance(v, (int, float)) else str(v) 
+                        for k, v in item.items()}
+
+            try:
+                with table.batch_writer() as batch:
+                    for item in items:
+                        batch.put_item(Item=item)
+
+            except NoCredentialsError:
+                print("No AWS credentials found.")
+                continue
+            except Exception as e:
+                print(f"Unexpected error: {e}")
+                continue
+
+        print(f"Data upload completed for {file_path} to table {table.name}.")
