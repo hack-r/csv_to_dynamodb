@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='csv_to_dynamodb',
-    version='0.2.0',
+    version='0.2.2',
     author='Jason Miller',
     author_email='hackr@duck.com',
     description='A library for automatically creating DynamoDB tables from CSV files and, optionally, automatically populating those tables.',
