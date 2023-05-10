@@ -86,7 +86,6 @@ def create_table(access_key, secret_key, region, csv_path, table_name=None, hash
     return table
 
 # Data ingest
-# Data ingest
 def populate_table(access_key, secret_key, region, csv_path, table_name=None, hash_key=None, range_key=None):
     # Handle both a single string and a list of strings for csv_path
     if isinstance(csv_path, str):
@@ -136,6 +135,8 @@ def populate_table(access_key, secret_key, region, csv_path, table_name=None, ha
         for chunk in pd.read_csv(file_path, chunksize=chunksize):
             items = chunk.to_dict('records')
             # Convert data to proper format for dynamodb
+            for item in items:
+                item = {k: decimal.Decimal(str(v)) if pd.notnull(v) and isinstance(v, (int, float)) and not pd.isna(v) else str(v) for k, v in item.items()}
             for i in range(len(items)):
                 for k, v in items[i].items():
                     if pd.notnull(v):
